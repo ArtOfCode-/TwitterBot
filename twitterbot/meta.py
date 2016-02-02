@@ -1,5 +1,6 @@
 modules = [
-    'base_mods'
+    'base_mods',
+    'tweet'
 ]
 
 module_name = "twitterbot"
