@@ -4,4 +4,6 @@ modules = [
     'oauth'
 ]
 
+commands = []
+
 module_name = "twitterbot"
