@@ -1,6 +1,7 @@
 modules = [
     'base_mods',
-    'twitter'
+    'twitter',
+    'oauth'
 ]
 
 module_name = "twitterbot"
