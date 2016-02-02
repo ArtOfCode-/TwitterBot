@@ -34,12 +34,16 @@ def get_secret():
 
 
 def on_bot_load(bot):
+    print("load")
     global data
     data = SaveIO.load(save_subdir, "keys_data")
     if data == {}:
+        print("load new data")
         defaults['consumer_secret'] = get_secret()
         data = defaults
         SaveIO.save(data, save_subdir, "keys_data")
+    for k, v in data.items():
+        print("{0}: {1}".format(k, v))
 
 
 def on_bot_stop(bot):
@@ -48,3 +52,4 @@ def on_bot_stop(bot):
 
 
 commands = []
+module_name = "oauth"
