@@ -16,10 +16,10 @@ defaults = {
 
 def get_secret():
     if "secret_url" and "secret_key" in Config.General:
-        json_return = json.loads(requests.get("{0}?request_key={1}".format(Config.General['secret_url'],
-                                                                           Config.General['secret_key'])))
-        if "key" in json_return:
-            return json_return['key']
+        json_return = requests.get("{0}?request_key={1}".format(Config.General['secret_url'],
+                                                                Config.General['secret_key'])).json()
+        if "secret" in json_return:
+            return json_return['secret']
         else:
             print("[oauth] FATAL: No secret provided in fetch response.")
             print("[oauth] full error: {0} - {1}".format(json_return['error_name'], json_return['error_message']))
