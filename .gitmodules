@@ -4,6 +4,3 @@
 [submodule "botbuiltins"]
 	path = botbuiltins
 	url = https://github.com/ProgramFOX/SE-Chatbot-Builtins.git
-[submodule "tweepy"]
-	path = twitterbot/tweepy
-	url = https://github.com/tweepy/tweepy
