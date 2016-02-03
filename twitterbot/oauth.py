@@ -3,10 +3,7 @@ import requests
 import SaveIO
 import sys
 from Config import *
-import importlib.util
-spec = importlib.util.spec_from_file_location("auth", "twitterbot/tweepy/tweepy")
-tweepy_lib = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(tweepy_lib)
+# import tweepy
 
 
 save_subdir = "oauth"
