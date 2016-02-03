@@ -19,10 +19,10 @@ def get_secret():
         json_return = json.loads(requests.get("{0}?request_key={1}".format(Config.General['secret_url'],
                                                                            Config.General['secret_key'])))
         if "key" in json_return:
-            return json['key']
+            return json_return['key']
         else:
             print("[oauth] FATAL: No secret provided in fetch response.")
-            print("[oauth] full error: {0} - {1}".format(json['error_name'], json['error_message']))
+            print("[oauth] full error: {0} - {1}".format(json_return['error_name'], json_return['error_message']))
             sys.exit(501)
 
     else:
