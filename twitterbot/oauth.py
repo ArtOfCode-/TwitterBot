@@ -1,9 +1,8 @@
-import json
 import requests
 import SaveIO
 import sys
 from Config import *
-# import tweepy
+import tweepy
 
 
 save_subdir = "oauth"
