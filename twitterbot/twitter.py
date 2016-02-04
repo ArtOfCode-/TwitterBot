@@ -3,6 +3,8 @@
 # Add necessary import to this file, including:
 from Module import Command
 import datetime
+from queue import Queue
+from threading import Thread
 import string
 import random
 import SaveIO # For if you want to save and load objects for this module.
@@ -10,8 +12,22 @@ save_subdir = 'twitter' # Define a save subdirectory for this Module, must be un
 # SaveIO.save(<object>, save_subdir, <filename>)  # Saves an object, filename does not need an extension.
 # SaveIO.load(save_subdir, <filename>)  # Loads and returns an object, filename does not need an extension.
 
-# def on_bot_load(bot): # This will get called when the bot loads (after your module has been loaded in), use to perform additional setup for this module.
-#     pass
+tweet_queue = Queue()
+
+def put_tweet(id, dt, tweet):
+    tweets = SaveIO.load(save_subdir, 'tweets')
+    tweets[id] = [dt, tweet]
+    SaveIO.save(tweets, save_subdir, 'tweets')
+
+def file_writer():
+    while True:
+        tweet = tweet_queue.get()
+        put_tweet(*tweet)
+        tweet_queue.task_done()
+    
+def on_bot_load(bot): # This will get called when the bot loads (after your module has been loaded in), use to perform additional setup for this module.
+    thread = Thread(target = file_writer)
+    thread.start()
 
 # def on_bot_stop(bot): # This will get called when the bot is stopping.
 #     pass
@@ -42,11 +58,9 @@ def tweet(cmd, bot, args, msg, event): # cmd refers to the Command you assign th
     if len(tweet) > 144:
         return "Unable to schedule tweet since its length exceeds 144 characters."
     
-    tweets = SaveIO.load(save_subdir, 'tweets')
     dt = datetime.datetime.now() + datetime.timedelta(seconds=60*delay)
     id = id_generator()
-    tweets[id] = [dt, tweet]
-    SaveIO.save(tweets, save_subdir, 'tweets')
+    tweet_queue.put_nowait( (id, dt, tweet) )
     return "scheduled tweet: \n%s \ntime: %s \nid: %s" % (tweet, str(dt), id)
     
     
