@@ -1,51 +1,41 @@
-# The commands listed in this file can be read and loaded as a Module into a MetaModule by the load_module() function
-
-# Add necessary import to this file, including:
-from Module import Command
 import datetime
 from queue import Queue
 from threading import Thread
 import string
 import random
-import SaveIO # For if you want to save and load objects for this module.
-save_subdir = 'twitter' # Define a save subdirectory for this Module, must be unique in the project. If this is not set, saves and loads will fail.
-# SaveIO.save(<object>, save_subdir, <filename>)  # Saves an object, filename does not need an extension.
-# SaveIO.load(save_subdir, <filename>)  # Loads and returns an object, filename does not need an extension.
+
+from Module import Command
+import SaveIO
+
+save_subdir = 'twitter'
 
 tweet_queue = Queue()
 
-def put_tweet(id, dt, tweet):
+
+def put_tweet(tweet_id, dt, tweet_text):
     tweets = SaveIO.load(save_subdir, 'tweets')
-    tweets[id] = [dt, tweet]
+    tweets[tweet_id] = [dt, tweet_text]
     SaveIO.save(tweets, save_subdir, 'tweets')
+
 
 def file_writer():
     while True:
-        tweet = tweet_queue.get()
-        put_tweet(*tweet)
+        tweet_obj = tweet_queue.get()
+        put_tweet(*tweet_obj)
         tweet_queue.task_done()
-    
-def on_bot_load(bot): # This will get called when the bot loads (after your module has been loaded in), use to perform additional setup for this module.
-    thread = Thread(target = file_writer)
+
+
+def on_bot_load(bot):
+    thread = Thread(target=file_writer)
     thread.start()
 
-# def on_bot_stop(bot): # This will get called when the bot is stopping.
-#     pass
-
-# def on_event(event, client, bot): # This will get called on any event (messages, new user entering the room, etc.)
-#     pass
-
-# Logic for the commands goes here.
-#
-# def <command exec name>(cmd, bot, args, msg, event): # cmd refers to the Command you assign this function to
-#     return "I'm in test1"
-#
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
-def tweet(cmd, bot, args, msg, event): # cmd refers to the Command you assign this function to
-    if len(args)<2:
+
+def tweet(cmd, bot, args, msg, event):
+    if len(args) < 2:
         return "Not enough arguments."
     try:
         delay = int(args[0])
@@ -54,31 +44,19 @@ def tweet(cmd, bot, args, msg, event): # cmd refers to the Command you assign th
     except ValueError:
         return "Invalid arguments."
     
-    tweet = ' '.join(args[1:])
-    if len(tweet) > 144:
+    tweet_text = ' '.join(args[1:])
+    if len(tweet_text) > 140:
         return "Unable to schedule tweet since its length exceeds 144 characters."
     
     dt = datetime.datetime.now() + datetime.timedelta(seconds=60*delay)
-    id = id_generator()
-    tweet_queue.put_nowait( (id, dt, tweet) )
-    return "scheduled tweet: \n%s \ntime: %s \nid: %s" % (tweet, str(dt), id)
-    
-    
+    tweet_id = id_generator()
+    tweet_queue.put_nowait((tweet_id, dt, tweet_text))
+    return "scheduled tweet: \n%s \ntime: %s \nid: %s" % (tweet_text, str(dt), tweet_id)
 
 
 commands = [  # A list of all Commands in this Module.
-    Command( 'tweet', tweet, 'Schedules a tweet. Syntax: $PREFIXtweet <delay> (in minutes) <tweet>', True, False, None, None)
-    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <special arg parsing method>(*) (= None), <aliases> (= None), <allowed chars> (= string.printable), <disallowed chars> (= None) (**) ),
-    # ...
+    Command('tweet', tweet, 'Schedules a tweet. Syntax: $PREFIXtweet <delay> (in minutes) <tweet>',
+            True, False, None, None)
 ]
-
-# (*) <special arg parsing method> = Some commands require a non-default argument parsing method.
-# Pass it there when necessary. It must return the array of arguments.
-
-# (**) Allowed and disallowed chars
-# You can choose to allow/disallow a specific set of characters in the command's arguments.
-# By default, the allowed chars is string.printable (see https://docs.python.org/3/library/string.html#string-constants for string constants).
-# If a char is both allowed and disallowed, disallowed has higher importance.
-# If allowed_chars is None, all chars are allowed (unless those specified in disallowed_chars).
 
 module_name = "twitter"
