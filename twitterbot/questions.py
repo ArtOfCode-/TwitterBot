@@ -36,7 +36,11 @@ def questions_thread():
     multiplier = 1
     last_checked = None
     while not thread_terminate:
-        response = requester.make_request("/questions", {'pagesize': 100, 'site': 'worldbuilding.stackexchange.com'})
+        response = requester.make_request("/questions", {
+            'pagesize': 100,
+            'site': 'worldbuilding.stackexchange.com',
+            'filter': '!-NA3hm*ngTnsMDIZ8mpEhaYGHgRK7RIZP'
+        })
         print("Sent request.")
         if not response.is_error():
             items = response.get_items()
@@ -64,7 +68,7 @@ def questions_thread():
 
 
 def days_old(dt):
-    dt_obj = datetime.strptime(dt)
+    dt_obj = datetime.fromtimestamp(dt / 1e3)
     delta = datetime.now() - dt_obj
     return delta.days
 
