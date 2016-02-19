@@ -69,7 +69,7 @@ def questions_thread(**kwargs):
 
 
 def days_old(dt):
-    dt_obj = datetime.fromtimestamp(dt / 1e3)
+    dt_obj = datetime.fromtimestamp(dt)
     delta = datetime.now() - dt_obj
     return delta.days
 
