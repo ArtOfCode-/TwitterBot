@@ -5,7 +5,7 @@ from datetime import date, datetime
 
 import apipy
 
-import Config
+from Config import Config
 
 module_name = "questions"
 save_subdir = "twb_questions"
@@ -18,6 +18,7 @@ thread_terminate = False
 def on_bot_load(bot):
     global thread_handle
     thread_handle = threading.Thread(target=questions_thread)
+    thread_handle.start()
 
 
 def on_bot_stop(bot):
@@ -31,11 +32,11 @@ def on_bot_stop(bot):
 
 
 def questions_thread():
-    requester = apipy.APIRequester(Config.Questions['api_id'], Config.Questions['api_key'])
+    requester = apipy.APIRequester(Config.Questions['api_key'], Config.Questions['api_id'])
     multiplier = 1
     last_checked = None
     while not thread_terminate:
-        response = requester.make_request("/questions", {'pagesize': 100})
+        response = requester.make_request("/questions", {'pagesize': 100, 'site': 'worldbuilding.stackexchange.com'})
         print("Sent request.")
         if not response.is_error():
             items = response.get_items()
@@ -56,6 +57,7 @@ def questions_thread():
                         print("Tweetable: {0}".format(item['question_id']))
         else:
             multiplier *= 3
+            print("Response from the API was an error: {0}".format(response.get_wrapper()['error_message']))
 
         sleep(Config.Questions['cycle_timeout'] * multiplier)
         multiplier = 1
