@@ -41,7 +41,6 @@ def questions_thread():
             'site': 'worldbuilding.stackexchange.com',
             'filter': '!-NA3hm*ngiTSYRTK(sa-P-n.5IICut5tL'
         })
-        print("Sent request.")
         if not response.is_error():
             items = response.get_items()
             for item in items:
@@ -59,7 +58,7 @@ def questions_thread():
                        ('locked_date' not in item or item['locked_date'] is None) and \
                        ('notice' not in item or item['notice'] is None):
                         print("Tweetable: {0}".format(item['question_id']))
-                    last_checked = item['question_id']
+            last_checked = items[0]['question_id']
         else:
             multiplier *= 3
             print("Response from the API was an error: {0}".format(response.get_wrapper()['error_message']))
