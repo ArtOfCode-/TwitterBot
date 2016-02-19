@@ -39,7 +39,7 @@ def questions_thread(**kwargs):
     while not thread_terminate:
         response = requester.make_request("/questions", {
             'pagesize': 100,
-            'site': 'worldbuilding.stackexchange.com',
+            'site': 'worldbuilding',
             'filter': '!-NA3hm*ngiTSYRTK(sa-P-n.5IICut5tL'
         })
         if not response.is_error():
