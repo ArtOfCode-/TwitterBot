@@ -17,7 +17,7 @@ thread_terminate = False
 
 def on_bot_load(bot):
     global thread_handle
-    thread_handle = threading.Thread(target=questions_thread)
+    thread_handle = threading.Thread(target=questions_thread, kwargs={'bot': bot})
     thread_handle.start()
 
 
@@ -31,7 +31,8 @@ def on_bot_stop(bot):
         sys.exit(601)
 
 
-def questions_thread():
+def questions_thread(**kwargs):
+    bot = kwargs.get('bot')
     requester = apipy.APIRequester(Config.Questions['api_key'], Config.Questions['api_id'])
     multiplier = 1
     last_checked = None
@@ -57,7 +58,7 @@ def questions_thread():
                        controversy(item['up_vote_count'], item['down_vote_count']) <= Config.Questions['controversy'] and \
                        ('locked_date' not in item or item['locked_date'] is None) and \
                        ('notice' not in item or item['notice'] is None):
-                        print("Tweetable: {0}".format(item['question_id']))
+                        bot.room.send_message("Tweetable: {0}".format(item['share_link']))
             last_checked = items[0]['question_id']
         else:
             multiplier *= 3
