@@ -1,7 +1,7 @@
 import threading
 import sys
 from time import sleep
-from datetime import date, datetime
+from datetime import datetime
 
 import apipy
 
@@ -64,7 +64,7 @@ def questions_thread():
 
 
 def days_old(dt):
-    dt_obj = date(dt)
+    dt_obj = datetime.strptime(dt)
     delta = datetime.now() - dt_obj
     return delta.days
 
