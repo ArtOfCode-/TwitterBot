@@ -1,7 +1,8 @@
 modules = [
     'base_mods',
     'twitter',
-    'oauth'
+    'oauth',
+    'questions'
 ]
 
 commands = []
