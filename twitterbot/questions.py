@@ -39,7 +39,7 @@ def questions_thread():
         response = requester.make_request("/questions", {
             'pagesize': 100,
             'site': 'worldbuilding.stackexchange.com',
-            'filter': '!-NA3hm*ngTnsMDIZ8mpEhaYGHgRK7RIZP'
+            'filter': '!-NA3hm*ngiTSYRTK(sa-P-n.5IICut5tL'
         })
         print("Sent request.")
         if not response.is_error():
@@ -53,11 +53,11 @@ def questions_thread():
                        item['score'] >= Config.Questions['score'] and \
                        item['answer_count'] >= Config.Questions['answer_count'] and \
                        item['close_vote_count'] <= Config.Questions['close_votes'] and \
-                       item['closed_reason'] is None and \
+                       ('closed_reason' not in item or item['closed_reason'] is None) and \
                        item['delete_vote_count'] <= Config.Questions['delete_votes'] and \
                        controversy(item['up_vote_count'], item['down_vote_count']) <= Config.Questions['controversy'] and \
-                       item['locked_date'] is None and \
-                       item['notice'] is None:
+                       ('locked_date' not in item or item['locked_date'] is None) and \
+                       ('notice' not in item or item['notice'] is None):
                         print("Tweetable: {0}".format(item['question_id']))
         else:
             multiplier *= 3
