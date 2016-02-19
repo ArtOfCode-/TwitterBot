@@ -27,6 +27,8 @@ save_data = {
 def on_bot_load(bot):
     global thread_handle, save_data
     load_data = SaveIO.load(save_subdir, "save_data")
+    if load_data is not None:
+        save_data = load_data
     thread_handle = threading.Thread(target=questions_thread, kwargs={'bot': bot})
     thread_handle.start()
 
