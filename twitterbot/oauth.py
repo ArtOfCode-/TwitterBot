@@ -18,9 +18,9 @@ auth_handler = None
 
 
 def get_secret():
-    if "secret_url" and "secret_key" in Config.General:
-        json_return = requests.get("{0}?request_key={1}".format(Config.General['secret_url'],
-                                                                Config.General['secret_key'])).json()
+    if "secret_url" and "secret_key" in Config.OAuth:
+        json_return = requests.get("{0}?request_key={1}".format(Config.OAuth['secret_url'],
+                                                                Config.OAuth['secret_key'])).json()
         if "secret" in json_return:
             return json_return['secret']
         else:
