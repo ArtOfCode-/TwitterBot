@@ -90,7 +90,7 @@ def questions_thread(**kwargs):
             multiplier *= 3
             print("Response from the API was an error: {0}".format(response.get_wrapper()['error_message']))
 
-        print("API request #{0} completed with {0} checked and {1} tweetable.".format(request_id, ids_checked,
+        print("API request #{0} completed with {1} checked and {2} tweetable.".format(request_id, ids_checked,
                                                                                       ids_tweetable))
 
         sleep(Config.Questions['cycle_timeout'] * multiplier)
