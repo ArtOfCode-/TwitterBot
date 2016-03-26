@@ -97,12 +97,13 @@ def questions_thread(**kwargs):
                                                                                       ids_tweetable)
         print(log)
         logs.write_log_line(log)
+        
+        save_data['request_id'] += 1
+        SaveIO.save(save_data, save_subdir, "save_data")
 
         sleep(Config.Questions['cycle_timeout'] * multiplier)
 
         multiplier = 1
-        save_data['request_id'] += 1
-        SaveIO.save(save_data, save_subdir, "save_data")
 
 
 def days_old(dt):
