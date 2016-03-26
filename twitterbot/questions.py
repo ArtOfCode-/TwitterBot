@@ -89,15 +89,14 @@ def questions_thread(**kwargs):
             last_checked = items[0]['question_id']
         else:
             multiplier *= 3
-            log = "Response from the API was an error: {0}".format(response.get_wrapper()['error_message'])
+            log = "Request #{0} errored: {1}".format(request_id, response.get_wrapper()['error_message'])
             print(log)
             logs.write_log_line(log)
 
-        log = "API request #{0} completed with {1} checked and {2} tweetable.".format(request_id, ids_checked,
-                                                                                      ids_tweetable)
+        log = "Request #{0}: (R, C, T)".format(request_id, len(items), ids_checked, ids_tweetable)
         print(log)
         logs.write_log_line(log)
-        
+
         save_data['request_id'] += 1
         SaveIO.save(save_data, save_subdir, "save_data")
 
