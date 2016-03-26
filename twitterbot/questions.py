@@ -8,7 +8,7 @@ import apipy
 
 from Config import Config
 import SaveIO
-import logs
+from . import logs
 
 module_name = "questions"
 save_subdir = "twb_questions"
