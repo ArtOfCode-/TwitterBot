@@ -93,7 +93,7 @@ def questions_thread(**kwargs):
             print(log)
             logs.write_log_line(log)
 
-        log = "Request #{0}: (R, C, T)".format(request_id, len(items), ids_checked, ids_tweetable)
+        log = "Request #{0}: (R, C, T) {1} {2} {3}".format(request_id, len(items), ids_checked, ids_tweetable)
         print(log)
         logs.write_log_line(log)
 
