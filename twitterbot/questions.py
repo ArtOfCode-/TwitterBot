@@ -8,6 +8,7 @@ import apipy
 
 from Config import Config
 import SaveIO
+import logs
 
 module_name = "questions"
 save_subdir = "twb_questions"
@@ -78,7 +79,7 @@ def questions_thread(**kwargs):
                       ('locked_date' not in item or item['locked_date'] is None) and \
                       ('notice' not in item or item['notice'] is None) and \
                       (str(item['question_id']) not in save_data['tweeted_ids'] or
-                       days_old(save_data['tweeted_ids'][str(item['question_id'])]) > Config.Questions['last_tweet']):
+                      days_old(save_data['tweeted_ids'][str(item['question_id'])]) > Config.Questions['last_tweet']):
                         bot.room.send_message("Tweetable: {0}".format(item['share_link']))
                         ids_tweetable += 1
                         save_data['tweeted_ids'][str(item['question_id'])] = time()
@@ -88,10 +89,14 @@ def questions_thread(**kwargs):
             last_checked = items[0]['question_id']
         else:
             multiplier *= 3
-            print("Response from the API was an error: {0}".format(response.get_wrapper()['error_message']))
+            log = "Response from the API was an error: {0}".format(response.get_wrapper()['error_message'])
+            print(log)
+            logs.write_log_line(log)
 
-        print("API request #{0} completed with {1} checked and {2} tweetable.".format(request_id, ids_checked,
-                                                                                      ids_tweetable))
+        log = "API request #{0} completed with {1} checked and {2} tweetable.".format(request_id, ids_checked,
+                                                                                      ids_tweetable)
+        print(log)
+        logs.write_log_line(log)
 
         sleep(Config.Questions['cycle_timeout'] * multiplier)
 
