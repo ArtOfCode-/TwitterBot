@@ -5,7 +5,7 @@ def write_log_line(line):
         f.write(line)
 
 def command_logs(cmd, bot, args, msg, event):
-    num_lines = args[0] if len(args) > 0 else 100
+    num_lines = int(args[0]) if len(args) > 0 else 100
     with open("system.log", "r") as f:
         lines = f.readlines()
     return "\n".join(lines[0:num_lines])
