@@ -19,6 +19,7 @@ thread_handle = None
 thread_terminate = False
 
 scheduler = None
+scheduler_running = False
 
 save_data = {
     "request_id": 1,
@@ -54,7 +55,7 @@ def on_bot_load(bot):
 
     scheduler = sched.scheduler()
     fill_sched_queue()
-    schedule_thread = threading.Thread(target=scheduler.run)
+    schedule_thread = threading.Thread(target=scheduler_thread)
 
     q_thread.start()
     schedule_thread.start()
@@ -68,6 +69,19 @@ def on_bot_stop(bot):
     if thread_handle.is_alive():
         print("Thread could not be terminated - program will exit, but thread may continue.")
         sys.exit(601)
+
+
+def scheduler_thread():
+    global scheduler_running
+    scheduler_running = True
+    scheduler.run()
+    scheduler_running = False
+
+
+def run_scheduler():
+    if not scheduler_running:
+        schedule_thread = threading.Thread(target=scheduler_thread)
+        schedule_thread.start()
 
 
 def questions_thread(**kwargs):
