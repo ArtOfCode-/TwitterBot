@@ -12,5 +12,5 @@ def create_tweet_for(item):
     text.replace('$ShortLink', shortlinks.get_shortlink(item['share_link']))
     if len(text) <= 140:
         return text
-    else
+    else:
         raise ValueError("Text is too long to be Tweeted.")
