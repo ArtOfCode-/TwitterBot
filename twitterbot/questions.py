@@ -36,13 +36,13 @@ def on_bot_load(bot):
     if load_data is not None:
         save_data = load_data
 
-    questions_thread = threading.Thread(target=questions_thread, kwargs={'bot': bot})
+    q_thread = threading.Thread(target=questions_thread, kwargs={'bot': bot})
 
     scheduler = sched.scheduler()
     fill_sched_queue()
     schedule_thread = threading.Thread(target=scheduler.run)
 
-    questions_thread.start()
+    q_thread.start()
     schedule_thread.start()
 
 
