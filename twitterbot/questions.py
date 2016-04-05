@@ -123,6 +123,7 @@ def questions_thread(**kwargs):
                         try:
                             tweet_text = tweets.create_tweet_for(item)
                             queue_tweet(tweet_text)
+                            run_scheduler()
                         except ValueError:
                             continue
 
