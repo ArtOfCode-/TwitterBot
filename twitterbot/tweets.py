@@ -7,8 +7,9 @@ def do_tweet(**kwargs):
 
 
 def create_tweet_for(item):
-    text = Config.Tweets['text'].replace('$Title', item['title'])
-                                .replace('$ShortLink', shortlinks.get_shortlink(item['share_link']))
+    text = Config.Tweets['text']
+    text.replace('$Title', item['title'])
+    text.replace('$ShortLink', shortlinks.get_shortlink(item['share_link']))
     if len(text) <= 140:
         return text
     else
