@@ -30,11 +30,25 @@ save_data = {
 }
 
 
+def verify_data():
+    required_keys = {
+        'request_id': 1,
+        'tweeted_ids': {},
+        'schedule_queue': [],
+        'latest_tweet': None
+    }
+    for k, v in required_keys.items():
+        if k not in save_data:
+            save_data[k] = v
+    SaveIO.save(save_data, save_subdir, "save_data")
+
+
 def on_bot_load(bot):
     global thread_handle, save_data, scheduler
     load_data = SaveIO.load(save_subdir, "save_data")
     if load_data is not None:
         save_data = load_data
+        verify_data()
 
     q_thread = threading.Thread(target=questions_thread, kwargs={'bot': bot})
 
