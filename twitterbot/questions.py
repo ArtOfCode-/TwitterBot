@@ -3,12 +3,13 @@ import sys
 from time import sleep
 from datetime import datetime
 from time import time
+import sched
 
 import apipy
 
 from Config import Config
 import SaveIO
-from . import logs
+from . import logs, oauth, shortlinks, tweets
 
 module_name = "questions"
 save_subdir = "twb_questions"
@@ -17,21 +18,32 @@ commands = []
 thread_handle = None
 thread_terminate = False
 
+scheduler = None
+
 save_data = {
     "request_id": 1,
     "tweeted_ids": {
         # 'question id': 'time checked'
-    }
+    },
+    'schedule_queue': [],
+    'latest_tweet': None
 }
 
 
 def on_bot_load(bot):
-    global thread_handle, save_data
+    global thread_handle, save_data, scheduler
     load_data = SaveIO.load(save_subdir, "save_data")
     if load_data is not None:
         save_data = load_data
-    thread_handle = threading.Thread(target=questions_thread, kwargs={'bot': bot})
-    thread_handle.start()
+
+    questions_thread = threading.Thread(target=questions_thread, kwargs={'bot': bot})
+
+    scheduler = sched.scheduler()
+    fill_sched_queue()
+    schedule_thread = threading.Thread(target=scheduler.run)
+
+    questions_thread.start()
+    schedule_thread.start()
 
 
 def on_bot_stop(bot):
@@ -80,6 +92,12 @@ def questions_thread(**kwargs):
                       ('notice' not in item or item['notice'] is None) and \
                       (str(item['question_id']) not in save_data['tweeted_ids'] or
                       days_old(save_data['tweeted_ids'][str(item['question_id'])]) > Config.Questions['last_tweet']):
+                        try:
+                            tweet_text = tweets.create_tweet_for(item)
+                            queue_tweet(tweet_text)
+                        except ValueError:
+                            continue
+
                         bot.room.send_message("Tweetable: {0}".format(item['share_link']))
                         ids_tweetable += 1
                         save_data['tweeted_ids'][str(item['question_id'])] = time()
@@ -107,8 +125,7 @@ def questions_thread(**kwargs):
 
 def days_old(dt):
     dt_obj = datetime.fromtimestamp(dt)
-    delta = datetime.now() - dt_obj
-    return delta.days
+    return date_days_old(dt_obj)
 
 
 def date_days_old(dt):
@@ -118,3 +135,18 @@ def date_days_old(dt):
 
 def controversy(up, down):
     return float(down) / float(up)
+
+
+def fill_sched_queue():
+    for item in save_data['schedule_queue']:
+        scheduler.enterabs(item['time'], item['priority'], item['action'], item['argument'], item['kwargs'])
+        if save_data['latest_tweet'] is None or item['time'] > save_data['latest_tweet']:
+            save_data['latest_tweet'] = item['time']
+
+
+def queue_tweet(text):
+    delta = datetime.timedelta(minutes=Config.Tweets['max_frequency'])
+    post_time = save_data['latest_tweet'] + delta
+    scheduler.enterabs(post_time, 0, tweets.do_tweet, None, {'text': text})
+    save_data['latest_tweet'] = post_time
+    SaveIO.save(save_data, save_subdir, "save_data")
